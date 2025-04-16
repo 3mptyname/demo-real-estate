@@ -120,3 +120,59 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Swiper Navigation Next Button */
+.swiper-button-next {
+  color: black !important; /* Change arrow color to black */
+  padding: 30px;
+  position: relative;
+  background: linear-gradient(to right, rgb(252, 251, 251), rgb(255, 255, 255)); /* Fading background */
+  border-radius: 50%; /* Make the background circular */
+  width: 50px; /* Adjust size */
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Swiper Navigation Previous Button */
+.swiper-button-prev {
+  color: black !important; /* Change arrow color to black */
+  padding: 30px;
+  position: relative;
+  background: linear-gradient(to left, rgb(255, 255, 255), rgb(255, 255, 255)); /* Fading background */
+  border-radius: 50%; /* Make the background circular */
+  width: 50px; /* Adjust size */
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Swiper Pagination */
+.swiper-pagination {
+  bottom: -8px !important; /* Move pagination below the Swiper container */
+  display: flex !important; /* Ensure pagination is visible */
+  justify-content: center; /* Center pagination bullets */
+  align-items: center; /* Align bullets vertically */
+  background-color: white; /* White background for the pill */
+  padding: 8px 24px; /* Add padding to make the pill longer */
+  border-radius: 9999px; /* Fully round the container */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+}
+
+/* Swiper Pagination Bullets */
+.swiper-pagination-bullet {
+  background-color: black !important; /* Black bullets */
+  opacity: 1 !important; /* Make bullets fully visible */
+  width: 16px; /* Adjust bullet size */
+  height: 16px;
+  margin: 0 6px; /* Add spacing between bullets */
+  border-radius: 50%; /* Make bullets circular */
+}
+
+/* Swiper Pagination Active Bullet */
+.swiper-pagination-bullet-active {
+  background-color: white !important; /* White active bullet */
+  border: 2px solid black; /* Add a border to the active bullet */
+}
