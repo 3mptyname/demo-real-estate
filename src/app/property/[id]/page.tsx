@@ -20,7 +20,7 @@ interface Property {
   location: string;
   description: string;
   image: string;
-  price: string; // Added price property
+  price: string;
   coordinates: [number, number];
 }
 
@@ -28,11 +28,11 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
   const [property, setProperty] = useState<Property | null>(null);
   const [iconReady, setIconReady] = useState(false);
   const [customIcon, setCustomIcon] = useState<L.Icon | null>(null);
-  const [formSubmitted, setFormSubmitted] = useState(false); // Track form submission
+  const [formSubmitted, setFormSubmitted] = useState(false); // Declare formSubmitted state
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFormSubmitted(true); // Show confirmation card
+    setFormSubmitted(true); // Update formSubmitted state to true when the form is submitted
   };
 
   useEffect(() => {
@@ -43,22 +43,21 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
       }
       setProperty({
         ...foundProperty,
-        coordinates: getCoordinates(foundProperty.location), // Add coordinates based on location
+        coordinates: getCoordinates(foundProperty.location),
       });
     });
 
-    if (typeof window !== "undefined") {
-      import("leaflet").then((leaflet) => {
-        const icon = leaflet.icon({
-          iconUrl: "/images/location-dot-solid.svg",
-          iconSize: [32, 32],
-          iconAnchor: [16, 32],
-          popupAnchor: [0, -32],
-        });
-        setCustomIcon(icon);
-        setIconReady(true);
+    // Dynamically import leaflet and set up the custom icon
+    import("leaflet").then((leaflet) => {
+      const icon = leaflet.icon({
+        iconUrl: "/images/location-dot-solid.svg",
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32],
       });
-    }
+      setCustomIcon(icon);
+      setIconReady(true);
+    });
   }, [params]);
 
   const getCoordinates = (location: string): [number, number] => {
@@ -80,18 +79,22 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
       "Zermatt, Switzerland": [46.0207, 7.7491],
     };
 
-    return coordinatesMap[location] || [0, 0]; // Default to [0, 0] if location is not found
+    return coordinatesMap[location] || [0, 0];
   };
 
   if (!property || !iconReady) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-gray-800"></div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar showSearch={false} />
-      <main className="flex-grow container mx-auto p-10">
-        <h1 className="text-4xl font-bold mb-4">{property.title}</h1>
+      <main className="flex-grow container mx-auto p-4 md:p-10">
+        <h1 className="text-2xl md:text-4xl font-bold mb-4">{property.title}</h1>
         <p className="text-lg font-semibold text-black mb-2">Price: {property.price}</p>
         <p className="text-gray-700 mb-2">{property.description}</p>
         <p className="text-gray-600 mb-6">Location: {property.location}</p>
@@ -102,11 +105,11 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
               alt={property.title}
               width={400}
               height={256}
-              className="w-full h-full object-cover rounded-md mb-6"
+              className="w-full h-full object-cover mb-6" // Removed `rounded-md`
               priority
             />
           </div>
-          <div className="w-full h-96 rounded-md overflow-hidden">
+          <div className={`w-full h-96 overflow-hidden transition-opacity duration-500 ${iconReady ? 'opacity-100' : 'opacity-0'}`}>
             {iconReady && customIcon && (
               <MapContainer
                 center={property.coordinates as [number, number]}
@@ -115,8 +118,8 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
                 className="h-full w-full"
               >
                 <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution="&copy; OpenStreetMap contributors"
+                  url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                  attribution="&copy; <a href='https://www.carto.com/'>CARTO</a>"
                 />
                 <Marker position={property.coordinates} icon={customIcon}>
                   <Popup>
@@ -131,17 +134,17 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
 
         {/* Contact Form */}
         <section className="mt-10">
-          <h2 className="text-2xl font-semibold mb-4">Contact Us About This Property</h2>
+          <h2 className="text-xl md:text-2xl font-semibold mb-4">Contact Us About This Property</h2>
           {formSubmitted ? (
             // Confirmation Card
-            <div className="p-6 bg-green-100 border border-green-300 rounded-md text-center">
+            <div className="p-6 bg-green-100 border border-green-300 rounded-md text-center transition-transform duration-500 transform translate-y-0">
               <h3 className="text-xl font-semibold text-green-800 mb-2">Thank you!</h3>
               <p className="text-green-700">Your message has been sent successfully. We will get back to you shortly.</p>
             </div>
           ) : (
             // Contact Form
             <form
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6"
               onSubmit={handleFormSubmit}
             >
               <div className="flex flex-col">
@@ -152,7 +155,7 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
                   type="text"
                   id="name"
                   placeholder="Your Name"
-                  className="p-2 border border-gray-300 rounded-md"
+                  className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300"
                   required
                 />
               </div>

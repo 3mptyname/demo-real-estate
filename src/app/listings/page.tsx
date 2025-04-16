@@ -12,7 +12,7 @@ export default function ListingsPage() {
   const { searchQuery } = useSearch();
   const [sortOption, setSortOption] = useState("title");
 
-  // Filter listings based on the search query
+  // Filter and sort listings based on the search query and sort option
   const filteredListings = listings
     .filter(
       (listing) =>
@@ -24,6 +24,8 @@ export default function ListingsPage() {
         return a.title.localeCompare(b.title);
       } else if (sortOption === "location") {
         return a.location.localeCompare(b.location);
+      } else if (sortOption === "price") {
+        return parseFloat(a.price.replace(/[^0-9.-]+/g, "")) - parseFloat(b.price.replace(/[^0-9.-]+/g, ""));
       }
       return 0;
     });
@@ -31,29 +33,30 @@ export default function ListingsPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar />
-      <main className="flex-grow container mx-auto p-10">
-        <h1 className="text-4xl font-bold mb-6">Listings</h1>
+      <main className="flex-grow container mx-auto p-4 md:p-10">
+        <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">Listings</h1>
 
         {/* Sort Dropdown */}
-        <div className="mb-6 flex justify-end">
+        <div className="mb-8 flex justify-end">
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
-            className="p-2 border border-gray-300 rounded-md"
+            className="p-3 border border-gray-300 rounded-md w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-black"
           >
             <option value="title">Sort by Title</option>
             <option value="location">Sort by Location</option>
+            <option value="price">Sort by Price</option>
           </select>
         </div>
 
         {/* Listings Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filteredListings.map((listing) => (
             <div
               key={listing.id}
-              className="p-4 shadow-lg bg-gray-100 border border-gray-300 hover:shadow-2xl hover:scale-105 transition-transform duration-300 rounded-md"
+              className="p-6 shadow-lg bg-white border border-gray-200 hover:shadow-2xl hover:scale-105 transition-transform duration-300 rounded-lg"
             >
-              <div className="w-full h-48 mb-4 overflow-hidden rounded-md">
+              <div className="w-full h-48 md:h-56 mb-4 overflow-hidden rounded-lg">
                 <Image
                   src={listing.image}
                   alt={listing.title}
@@ -63,14 +66,19 @@ export default function ListingsPage() {
                   priority
                 />
               </div>
-              <div>
-                <h4 className="text-xl font-semibold mb-2">{listing.title}</h4>
-                <p className="text-gray-600 mb-2">{listing.location}</p>
-                <p className="text-gray-500 text-sm mb-2">{listing.description}</p>
-                <p className="text-lg font-semibold text-black mb-4">{listing.price}</p>
+              <div className="flex flex-col gap-2">
+                {/* Make the title a clickable link */}
+                <Link href={`/property/${listing.id}`}>
+                  <h4 className="text-lg md:text-xl font-semibold text-black hover:text-gray-400 transition-colors duration-300">
+                    {listing.title}
+                  </h4>
+                </Link>
+                <p className="text-gray-600 text-sm md:text-base">{listing.location}</p>
+                <p className="text-gray-500 text-sm md:text-base">{listing.description}</p>
+                <p className="text-lg font-semibold text-black">{listing.price}</p>
                 <Link
                   href={`/property/${listing.id}`}
-                  className="block mt-4 bg-black text-white hover:bg-gray-800 px-4 py-2 text-center rounded-md"
+                  className="mt-4 bg-black text-white hover:bg-gray-800 px-4 py-2 text-center rounded-md"
                 >
                   View Details
                 </Link>
